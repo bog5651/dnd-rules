@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+
+import { use3dAnimation } from './../hooks/3dAnimation';
+
+const element = ref<HTMLElement>();
+
+const { renderCoin, resize, dispose } = use3dAnimation();
+
+async function init(): Promise<void> {
+  if (!element.value) {
+    return;
+  }
+
+  const canvas = await renderCoin();
+
+  element.value?.appendChild(canvas);
+
+  resize('coin');
+}
+
+onMounted(() => {
+  init();
+});
+
+onBeforeUnmount(() => {
+  dispose('coin');
+});
+</script>
+
+<template>
+  <div class="coin-animation">
+    <div ref="element" class="coin-animation__body" />
+  </div>
+</template>
+
+<style scoped>
+.coin-animation__body {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: -6px;
+}
+
+.coin-animation :deep(canvas) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.coin-animation :deep(canvas):focus {
+  outline: none;
+}
+</style>
